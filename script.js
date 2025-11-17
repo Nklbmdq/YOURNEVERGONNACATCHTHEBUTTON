@@ -1,71 +1,121 @@
-// Track level progress
-let currentLevel = parseInt(localStorage.getItem('currentLevel')) || 1;
-const totalLevels = 50;
-
-const levelContainer = document.getElementById("level-container");
-const checkbox = document.getElementById("checkbox");
-const spinner = document.getElementById("spinner");
-
-function saveProgress() {
-  localStorage.setItem('currentLevel', currentLevel);
+body {
+  font-family: Arial, sans-serif;
+  background: #f0f0f0;
+  text-align: center;
+  padding: 40px;
 }
 
-// Generate a simple fake challenge for each level
-function generateLevel(level) {
-  levelContainer.innerHTML = "";
-
-  const levelBox = document.createElement("div");
-  levelBox.classList.add("level-box");
-  levelBox.innerHTML = `<h2>Level ${level}</h2><p>Click all boxes with number ≤ ${Math.min(level, 9)}</p>`;
-
-  const grid = document.createElement("div");
-  grid.classList.add("level-grid");
-
-  for (let i = 1; i <= 9; i++) {
-    const cell = document.createElement("div");
-    cell.textContent = i;
-    cell.dataset.value = i;
-    cell.addEventListener("click", () => {
-      cell.classList.toggle("selected");
-    });
-    grid.appendChild(cell);
-  }
-
-  levelBox.appendChild(grid);
-  levelContainer.appendChild(levelBox);
+h1 {
+  margin-bottom: 30px;
 }
 
-// Handle fake reCAPTCHA click
-document.getElementById("recaptcha").addEventListener("click", () => {
-  if (checkbox.classList.contains("checked")) return;
+#game-container {
+  display: inline-block;
+}
 
-  spinner.style.display = "block";
+.recaptcha-box {
+  width: 300px;
+  height: 75px;
+  background: white;
+  border: 1px solid #d3d3d3;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px;
+  margin: 20px auto;
+  position: relative;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
 
-  setTimeout(() => {
-    spinner.style.display = "none";
-    checkbox.classList.add("checked");
+.checkbox {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #c1c1c1;
+  margin-right: 12px;
+  border-radius: 3px;
+  background: white;
+  position: relative;
+  transition: all 0.3s ease;
+}
 
-    // Check challenge
-    const selectedCells = Array.from(document.querySelectorAll(".level-grid div.selected"));
-    const correctCells = Array.from(document.querySelectorAll(".level-grid div")).filter(c => parseInt(c.dataset.value) <= Math.min(currentLevel, 9));
+.checkbox.checked {
+  background: #4285f4;
+  border-color: #4285f4;
+}
 
-    if (selectedCells.length === correctCells.length && selectedCells.every(c => correctCells.includes(c))) {
-      alert(`Level ${currentLevel} cleared!`);
-      currentLevel++;
-      if(currentLevel > totalLevels){
-        alert("🎉 You completed all 50 levels!");
-        currentLevel = 1;
-      }
-      saveProgress();
-      checkbox.classList.remove("checked");
-      generateLevel(currentLevel);
-    } else {
-      alert("Try again!");
-      checkbox.classList.remove("checked");
-    }
+.checkbox.checked::after {
+  content: "✔";
+  color: white;
+  font-size: 18px;
+  position: absolute;
+  top: -2px;
+  left: 2px;
+}
 
-  }, 1000); // spinner duration
-});
+.text {
+  font-size: 16px;
+  flex-grow: 1;
+  text-align: left;
+}
 
-// Initialize first level
-generateLevel(currentLevel);
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid #ccc;
+  border-top: 3px solid #4285f4;
+  border-radius: 50%;
+  display: none;
+  position: absolute;
+  right: 15px;
+  top: 27px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+
+.level-box {
+  margin: 15px 0;
+}
+
+.level-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 80px);
+  grid-gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.level-grid div {
+  width: 80px;
+  height: 80px;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 20px;
+  border-radius: 5px;
+  user-select: none;
+  transition: 0.3s;
+}
+
+.level-grid div.selected {
+  background: #4285f4;
+  color: white;
+  transform: scale(1.1);
+}
+
+.map-challenge {
+  width: 300px;
+  height: 200px;
+  background: url('https://i.imgur.com/fakeMap.png') no-repeat center center;
+  background-size: cover;
+  margin: 20px auto;
+  position: relative;
+  cursor: pointer;
+}
