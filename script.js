@@ -1,134 +1,45 @@
-// ==== RESET PROGRESS BUTTON SETUP ====
-// Make sure you have this button in your HTML:
-// <button id="reset-game">Reset Progress</button>
-document.getElementById("reset-game").addEventListener("click", () => {
-  localStorage.clear();          // clear all saved progress
-  alert("Progress has been reset!");
-  currentLevel = 1;              // reset to level 1
-  generateLevel(currentLevel);   // regenerate first level
-  checkbox.classList.remove("checked"); // reset reCAPTCHA
-});
-
-// ==== GAME LOGIC ====
-let currentLevel = parseInt(localStorage.getItem('currentLevel')) || 1;
-const totalLevels = 50;
-
-const levelContainer = document.getElementById("level-container");
-const checkbox = document.getElementById("checkbox");
-const spinner = document.getElementById("spinner");
-
-function saveProgress() {
-  localStorage.setItem('currentLevel', currentLevel);
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  background-color: white; /* change to black to test */
+  transition: background-color 0.3s;
 }
 
-// Pick challenge type based on level
-function pickChallenge(level) {
-  if (level <= 10) return 'number';
-  if (level <= 20) return 'emoji';
-  if (level <= 35) return 'color';
-  return 'map';
+h1 {
+  margin-bottom: 50px;
+  text-align: center;
 }
 
-// Generate the level dynamically
-function generateLevel(level) {
-  levelContainer.innerHTML = "";
-  const type = pickChallenge(level);
-
-  const levelBox = document.createElement("div");
-  levelBox.classList.add("level-box");
-  levelBox.innerHTML = `<h2>Level ${level}</h2>`;
-
-  if(type === 'number'){
-    levelBox.innerHTML += `<p>Click all numbers ≤ ${Math.min(level, 9)}</p>`;
-    const grid = document.createElement("div");
-    grid.classList.add("level-grid");
-    for(let i=1;i<=9;i++){
-      const cell = document.createElement("div");
-      cell.textContent=i;
-      cell.dataset.value=i;
-      cell.addEventListener("click",()=>cell.classList.toggle("selected"));
-      grid.appendChild(cell);
-    }
-    levelBox.appendChild(grid);
-
-  } else if(type === 'emoji'){
-    levelBox.innerHTML += `<p>Click all 🚗 emojis</p>`;
-    const grid = document.createElement("div");
-    grid.classList.add("level-grid");
-    const emojis = ['🚗','🚦','🏠','🌳','🚗','🚲','🚗','🛵','🌲'];
-    emojis.forEach(e=>{
-      const cell = document.createElement("div");
-      cell.textContent=e;
-      cell.addEventListener("click",()=>cell.classList.toggle("selected"));
-      grid.appendChild(cell);
-    });
-    levelBox.appendChild(grid);
-
-  } else if(type === 'color'){
-    levelBox.innerHTML += `<p>Click all blue squares</p>`;
-    const grid = document.createElement("div");
-    grid.classList.add("level-grid");
-    const colors = ['blue','red','green','blue','yellow','blue','red','green','blue'];
-    colors.forEach(c=>{
-      const cell = document.createElement("div");
-      cell.style.background=c;
-      cell.dataset.color=c;
-      cell.addEventListener("click",()=>cell.classList.toggle("selected"));
-      grid.appendChild(cell);
-    });
-    levelBox.appendChild(grid);
-
-  } else if(type === 'map'){
-    levelBox.innerHTML += `<p>Click the hidden item on the map</p>`;
-    const map = document.createElement("div");
-    map.classList.add("map-challenge");
-    // simulate "hidden item" click
-    map.addEventListener("click",()=>map.classList.toggle("selected"));
-    levelBox.appendChild(map);
-  }
-
-  levelContainer.appendChild(levelBox);
+#runaway {
+  position: absolute;
+  padding: 15px 30px;
+  font-size: 18px;
+  border-radius: 12px;
+  border: 2px solid #444;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.3s, box-shadow 0.2s;
+  box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
 }
 
-// Handle fake reCAPTCHA click
-document.getElementById("recaptcha").addEventListener("click",()=>{
-  if(checkbox.classList.contains("checked")) return;
-
-  spinner.style.display="block";
-
-  setTimeout(()=>{
-    spinner.style.display="none";
-    checkbox.classList.add("checked");
-
-    // Check selection
-    const selectedCells = Array.from(document.querySelectorAll(".level-grid div.selected,.map-challenge.selected"));
-    const correctCells = Array.from(document.querySelectorAll(".level-grid div")).filter(c=>{
-      if(c.dataset.value) return parseInt(c.dataset.value)<=Math.min(currentLevel,9);
-      if(c.dataset.color) return c.dataset.color==='blue';
-      if(c.textContent==='🚗') return true;
-      return false;
-    });
-
-    if(selectedCells.length===correctCells.length && selectedCells.every(c=>correctCells.includes(c))){
-      // short delay for animation
-      setTimeout(()=>{
-        alert(`Level ${currentLevel} cleared!`);
-        currentLevel++;
-        if(currentLevel>totalLevels){
-          alert("🎉 You completed all 50 levels!");
-          currentLevel=1;
-        }
-        saveProgress();
-        checkbox.classList.remove("checked");
-        generateLevel(currentLevel);
-      },500);
-    } else {
-      alert("Try again!");
-      checkbox.classList.remove("checked");
-    }
-
-  },1000); // spinner duration
-});
-
-// Initialize first level
-generateLevel(currentLevel);
+/* Mini legs decorative effect */
+#runaway::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: inherit;
+  bottom: -12px;
+  left: 10%;
+  border-radius: 50%;
+  box-shadow: 30px 0 0 0 inherit, 60px 0 0 0 inherit;
+  transform: scaleY(1);
+  transition: transform 0.2s;
+}
+#runaway.legs::after {
+  transform: scaleY(2);
+}
