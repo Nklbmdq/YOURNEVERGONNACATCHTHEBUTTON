@@ -1,45 +1,49 @@
-body {
-  font-family: Arial, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  margin: 0;
-  background-color: white; /* change to black to test */
-  transition: background-color 0.3s;
-}
+const button = document.getElementById('runaway');
 
-h1 {
-  margin-bottom: 50px;
-  text-align: center;
-}
+// Place button randomly initially
+button.style.top = `${window.innerHeight/2}px`;
+button.style.left = `${window.innerWidth/2}px`;
 
-#runaway {
-  position: absolute;
-  padding: 15px 30px;
-  font-size: 18px;
-  border-radius: 12px;
-  border: 2px solid #444;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.3s, box-shadow 0.2s;
-  box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
+// Determine button color based on background brightness
+function setButtonColor(){
+  const bg = window.getComputedStyle(document.body).backgroundColor;
+  // convert rgb to brightness
+  const rgb = bg.match(/\d+/g).map(Number);
+  const brightness = (rgb[0]*299 + rgb[1]*587 + rgb[2]*114)/1000;
+  if(brightness > 128){
+    button.style.backgroundColor = 'black';
+    button.style.color = 'white';
+  } else {
+    button.style.backgroundColor = 'white';
+    button.style.color = 'black';
+  }
 }
+setButtonColor();
 
-/* Mini legs decorative effect */
-#runaway::after {
-  content: '';
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background: inherit;
-  bottom: -12px;
-  left: 10%;
-  border-radius: 50%;
-  box-shadow: 30px 0 0 0 inherit, 60px 0 0 0 inherit;
-  transform: scaleY(1);
-  transition: transform 0.2s;
-}
-#runaway.legs::after {
-  transform: scaleY(2);
-}
+// Runaway logic
+document.addEventListener('mousemove', e => {
+  const rect = button.getBoundingClientRect();
+  const distanceX = e.clientX - (rect.left + rect.width/2);
+  const distanceY = e.clientY - (rect.top + rect.height/2);
+  const distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+
+  // If cursor is close, move button away
+  if(distance < 150){
+    button.classList.add('legs'); // grow legs
+
+    let newX = rect.left - distanceX/2;
+    let newY = rect.top - distanceY/2;
+
+    // keep inside viewport
+    newX = Math.max(0, Math.min(window.innerWidth - rect.width, newX));
+    newY = Math.max(0, Math.min(window.innerHeight - rect.height, newY));
+
+    button.style.left = `${newX}px`;
+    button.style.top = `${newY}px`;
+  } else {
+    button.classList.remove('legs'); // shrink legs
+  }
+});
+
+// Optional: resize window safety
+window.addEventListener('resize', setButtonColor);
