@@ -1,121 +1,45 @@
 body {
   font-family: Arial, sans-serif;
-  background: #f0f0f0;
-  text-align: center;
-  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  margin: 0;
+  background-color: white; /* change to black to test */
+  transition: background-color 0.3s;
 }
 
 h1 {
-  margin-bottom: 30px;
+  margin-bottom: 50px;
+  text-align: center;
 }
 
-#game-container {
-  display: inline-block;
-}
-
-.recaptcha-box {
-  width: 300px;
-  height: 75px;
-  background: white;
-  border: 1px solid #d3d3d3;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 10px;
-  margin: 20px auto;
-  position: relative;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.checkbox {
-  width: 24px;
-  height: 24px;
-  border: 2px solid #c1c1c1;
-  margin-right: 12px;
-  border-radius: 3px;
-  background: white;
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.checkbox.checked {
-  background: #4285f4;
-  border-color: #4285f4;
-}
-
-.checkbox.checked::after {
-  content: "✔";
-  color: white;
+#runaway {
+  position: absolute;
+  padding: 15px 30px;
   font-size: 18px;
+  border-radius: 12px;
+  border: 2px solid #444;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.3s, box-shadow 0.2s;
+  box-shadow: 0px 5px 15px rgba(0,0,0,0.3);
+}
+
+/* Mini legs decorative effect */
+#runaway::after {
+  content: '';
   position: absolute;
-  top: -2px;
-  left: 2px;
-}
-
-.text {
-  font-size: 16px;
-  flex-grow: 1;
-  text-align: left;
-}
-
-.spinner {
-  width: 20px;
-  height: 20px;
-  border: 3px solid #ccc;
-  border-top: 3px solid #4285f4;
+  width: 8px;
+  height: 8px;
+  background: inherit;
+  bottom: -12px;
+  left: 10%;
   border-radius: 50%;
-  display: none;
-  position: absolute;
-  right: 15px;
-  top: 27px;
-  animation: spin 1s linear infinite;
+  box-shadow: 30px 0 0 0 inherit, 60px 0 0 0 inherit;
+  transform: scaleY(1);
+  transition: transform 0.2s;
 }
-
-@keyframes spin {
-  0% { transform: rotate(0deg);}
-  100% { transform: rotate(360deg);}
-}
-
-.level-box {
-  margin: 15px 0;
-}
-
-.level-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 80px);
-  grid-gap: 10px;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.level-grid div {
-  width: 80px;
-  height: 80px;
-  background: #ddd;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 20px;
-  border-radius: 5px;
-  user-select: none;
-  transition: 0.3s;
-}
-
-.level-grid div.selected {
-  background: #4285f4;
-  color: white;
-  transform: scale(1.1);
-}
-
-.map-challenge {
-  width: 300px;
-  height: 200px;
-  background: url('https://i.imgur.com/fakeMap.png') no-repeat center center;
-  background-size: cover;
-  margin: 20px auto;
-  position: relative;
-  cursor: pointer;
+#runaway.legs::after {
+  transform: scaleY(2);
 }
